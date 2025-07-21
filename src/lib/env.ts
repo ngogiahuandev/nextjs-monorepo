@@ -1,16 +1,14 @@
+import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]),
+export const env = createEnv({
+  server: {
+    NODE_ENV: z.enum(["development", "production", "test"]),
+  },
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().min(1),
+  },
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
 });
-
-const parsedEnv = envSchema.safeParse(process.env);
-
-if (!parsedEnv.success) {
-  console.error("Invalid environment variables:", parsedEnv.error.format());
-  throw new Error("Invalid environment variables.");
-}
-
-console.log("Successfully loaded environment variables");
-
-export const env = parsedEnv.data;
